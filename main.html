@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trip Explorer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #63e0e4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 50px;
+      justify-content: center;
+    }
+
+    .filters select, .filters input {
+      padding: 8px;
+      font-size: 1rem;
+      outline-color: rgb(19, 29, 30);
+    }
+
+    .trip-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .trip-card {
+      background: rgb(247, 152, 201);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(61, 210, 9, 0.1);
+    }
+
+    .trip-card h3 {
+      margin: 0;
+      color: #ec1515;
+    }
+
+    .trip-card p {
+      margin: 4px 0;
+      color: zzz#b0f7fc;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Search Trips</h1>
+<div class="filters">
+  <label>
+    Destination:
+    <select id="destinationFilter">
+      <option value="">All Destinations</option>
+      <option value="Paris">Paris</option>
+      <option value="Maldives">Maldives</option>
+      <option value="Tokyo">Tokyo</option>
+      <option value="Switzerland">Switzerland</option>
+      <option value="Greece">Greece</option>
+      <option value="Dubai">Dubai</option>
+      <option value="New York">New York</option>
+      <option value="Bali">Bali</option>
+      <option value="Kerala">Kerala</option>
+      <option value="Manali">Manali</option>
+      <option value="Kashmir">Kashmir</option>
+      <option value="Singapore">Singapore</option>
+      <option value="Thailand">Thailand</option>
+      <option value="London">London</option>
+      <option value="Italy">Italy</option>
+      <option value="Australia">Australia</option>
+      <option value="Shimla">Shimla</option>
+      <option value="Andaman">Andaman</option>
+    </select>
+  </label>
+
+  <label>
+    Theme:
+    <select id="themeFilter">
+      <option value="">All Themes</option>
+      <option value="Romantic">Romantic</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Relaxation">Relaxation</option>
+    </select>
+  </label>
+  <input type="date" id="fromDate" />
+  <input type="date" id="toDate" />
+  <input type="number" id="priceFilter" placeholder="Max Price ₹" />
+</div>
+
+</div>
+
+<div class="trip-list" id="tripList">
+
+</div>
+
+
+
+<script>
+  const trips = [
+    { title: "Paris Getaway", destination: "Paris", theme: "Romantic", date: "2025-08-10", price: 90000 },
+    { title: "Maldives Beach Stay", destination: "Maldives", theme: "Relaxation", date: "2025-08-25", price: 150000 },
+    { title: "Tokyo Adventure", destination: "Tokyo", theme: "Adventure", date: "2025-09-05", price: 72000 },
+    { title: "Romantic Maldives", destination: "Maldives", theme: "Romantic", date: "2025-08-20", price: 120000 },
+    { title: "Tokyo Culture Trip", destination: "Tokyo", theme: "Relaxation", date: "2025-08-15", price: 99000 },
+    { title: "Swiss Alps Trek", destination: "Switzerland", theme: "Adventure", date: "2025-09-10", price: 105000 },
+    { title: "Greek Island Cruise", destination: "Greece", theme: "Relaxation", date: "2025-08-12", price: 105000 },
+    { title: "Dubai Luxury Tour", destination: "Dubai", theme: "Romantic", date: "2025-08-18", price: 155000 },
+    { title: "New York Explorer", destination: "New York", theme: "Adventure", date: "2025-09-01", price: 950000 },
+    { title: "Bali Yoga Retreat", destination: "Bali", theme: "Relaxation", date: "2025-09-08", price: 90000 },
+    { title: "Kerala Backwaters", destination: "Kerala", theme: "Relaxation", date: "2025-08-14", price: 65000 },
+    { title: "Manali Snow Adventure", destination: "Manali", theme: "Adventure", date: "2025-12-01", price: 55000 },
+    { title: "Kashmir Valley Love", destination: "Kashmir", theme: "Romantic", date: "2025-11-15", price: 50000 },
+    { title: "Singapore Shopping Spree", destination: "Singapore", theme: "Adventure", date: "2025-10-05", price: 95000 },
+    { title: "Thailand Island Tour", destination: "Thailand", theme: "Relaxation", date: "2025-09-28", price: 82000 },
+    { title: "London History Walk", destination: "London", theme: "Adventure", date: "2025-08-22", price: 85000 },
+    { title: "Italy Romance Trail", destination: "Italy", theme: "Romantic", date: "2025-08-30", price: 89000 },
+    { title: "Australia Surf Escape", destination: "Australia", theme: "Adventure", date: "2025-11-05", price: 96000 },
+    { title: "Shimla Honeymoon Special", destination: "Shimla", theme: "Romantic", date: "2025-12-10", price: 48000 },
+    { title: "Andaman Island Cruise", destination: "Andaman", theme: "Relaxation", date: "2025-09-18", price: 56000 }
+  ];
+
+  const tripList = document.getElementById("tripList");
+  const destinationFilter = document.getElementById("destinationFilter");
+  const themeFilter = document.getElementById("themeFilter");
+  const fromDateInput = document.getElementById("fromDate");
+  const toDateInput = document.getElementById("toDate");
+  const priceFilter = document.getElementById("priceFilter");
+
+  function displayTrips(filteredTrips) {
+    tripList.innerHTML = "";
+    if (filteredTrips.length === 0) {
+      tripList.innerHTML = "<p style='text-align:center;width:100%;font-weight:bold;'>No trips match your filters 😢</p>";
+      return;
+    }
+
+    filteredTrips.forEach(trip => {
+      const card = document.createElement("div");
+      card.className = "trip-card";
+      card.innerHTML = `
+        <h3>${trip.title}</h3>
+        <p><strong>Destination:</strong> ${trip.destination}</p>
+        <p><strong>Theme:</strong> ${trip.theme}</p>
+        <p><strong>Date:</strong> ${trip.date}</p>
+        <p><strong>Price:</strong> ₹${trip.price.toLocaleString()}</p>
+      `;
+      tripList.appendChild(card);
+    });
+  }
+
+  function filterTrips() {
+    const dest = destinationFilter.value;
+    const theme = themeFilter.value;
+    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+    const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
+    const maxPrice = parseInt(priceFilter.value, 10);
+
+    const filtered = trips.filter(trip => {
+      const tripDate = new Date(trip.date);
+      return (
+        (!dest || trip.destination === dest) &&
+        (!theme || trip.theme === theme) &&
+        (!fromDate || tripDate >= fromDate) &&
+        (!toDate || tripDate <= toDate) &&
+        (!maxPrice || trip.price <= maxPrice)
+      );
+    });
+
+    displayTrips(filtered);
+  }
+
+  
+  destinationFilter.addEventListener("change", filterTrips);
+  themeFilter.addEventListener("change", filterTrips);
+  fromDateInput.addEventListener("input", filterTrips);
+  toDateInput.addEventListener("input", filterTrips);
+  priceFilter.addEventListener("input", filterTrips);
+
+ 
+  displayTrips(trips);
+</script>
